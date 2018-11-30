@@ -1,0 +1,35 @@
+<script src="http://www.webgraphviz.com/viz.js"></script>
+<textarea id="input">digraph {
+  A -> {B; C}
+  B -> C -> D
+  D -> E -> {A; C}
+}</textarea>
+<div id="output"></div>
+<script>{
+  document.title = "LiveViz";
+  const input = document.getElementById("input");
+  const output = document.getElementById("output");
+  const render = () => output.innerHTML = Viz(input.value, "svg");
+  input.onkeyup = render;
+  render();
+}</script>
+<style>
+  body {
+    width: 95%;
+    display: grid;
+    grid-template-columns: 35% 65%;
+  }
+  #input {
+    grid-column: 1;
+  }
+  #output {
+    grid-column: 2;
+    display: flex;
+  }
+  #output > * {
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    margin: 0 auto;
+  }
+</style>
