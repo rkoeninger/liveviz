@@ -1,8 +1,9 @@
 <script src="viz.js"></script>
 <textarea id="input">digraph {
-  A -> {B; C}
-  B -> C -> D
-  D -> E -> {A; C}
+  A1 -> {B1; B2}
+  B1 -> {C1; C2} -> D1
+  B2 -> {C2; C3} -> D2
+        {D1; D2} -> E1
 }</textarea>
 <div id="output"></div>
 <script>{
