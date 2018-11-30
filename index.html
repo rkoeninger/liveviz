@@ -10,9 +10,18 @@
   document.title = "LiveViz";
   const input = document.getElementById("input");
   const output = document.getElementById("output");
+  if (window.location.search) {
+    input.value = decodeURIComponent(window.location.search.substr(1));
+  }
   const render = () => output.innerHTML = Viz(input.value, "svg");
+  const remember = () => {
+    const encodedState = encodeURIComponent(input.value);
+    const uri = `${location.protocol}//${location.host}${location.pathname}?${encodedState}`;
+    history.replaceState({encodedState}, document.title, uri);
+  };
   input.onkeyup = render;
   render();
+  setInterval(remember, 2500);
 }</script>
 <style>
   body {
