@@ -1,4 +1,5 @@
 <script src="viz.js"></script>
+<script src="lz-string.min.js"></script>
 <textarea id="input">digraph {
   A1 -> {B1; B2}
   B1 -> {C1; C2} -> D1
@@ -10,18 +11,25 @@
   document.title = "LiveViz";
   const input = document.getElementById("input");
   const output = document.getElementById("output");
+  let changed = false;
   if (window.location.search) {
-    input.value = decodeURIComponent(window.location.search.substr(1));
+    input.value = LZString.decompressFromBase64(window.location.search.substr(1));
   }
-  const render = () => output.innerHTML = Viz(input.value, "svg");
   const remember = () => {
-    const encodedState = encodeURIComponent(input.value);
-    const uri = `${location.protocol}//${location.host}${location.pathname}?${encodedState}`;
-    history.replaceState({encodedState}, document.title, uri);
+    if (changed) {
+      changed = false;
+      const state = LZString.compressToBase64(input.value);
+      const uri = `${location.protocol}//${location.host}${location.pathname}?${state}`;
+      history.replaceState({state}, document.title, uri);
+    }
   };
-  input.onkeyup = render;
+  const render = () => output.innerHTML = Viz(input.value, "svg");
+  input.onkeyup = () => {
+    changed = true;
+    setTimeout(remember, 5000);
+    render();
+  };
   render();
-  setInterval(remember, 5000);
 }</script>
 <style>
   body {
