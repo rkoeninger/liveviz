@@ -1,16 +1,33 @@
 <script src="viz.js"></script>
 <script src="lz-string.min.js"></script>
-<textarea id="input">digraph {
+<div class="container">
+  <textarea id="input">digraph {
   A1 -> {B1; B2}
   B1 -> {C1; C2} -> D1
   B2 -> {C2; C3} -> D2
         {D1; D2} -> E1
 }</textarea>
-<div id="output"></div>
+  <div id="output"></div>
+</div>
+<button id="size">Fit to Window</button>
 <script>{
   document.title = "LiveViz";
   const input = document.getElementById("input");
   const output = document.getElementById("output");
+  const size = document.getElementById("size");
+  size.onclick = () => {
+    if (size.innerText === "Fit to Window") {
+      size.innerText = "Show Full Size";
+      const style = document.createElement("style");
+      style.setAttribute("id", "fit");
+      style.innerText = "#output { display: flex; overflow: auto; }";
+      document.body.appendChild(style);
+    } else {
+      size.innerText = "Fit to Window";
+      const style = document.getElementById("fit");
+      style.parentNode.removeChild(style)
+    }
+  };
   let changed = false;
   if (window.location.search) {
     input.value = LZString.decompressFromBase64(window.location.search.substr(1));
@@ -33,6 +50,12 @@
 }</script>
 <style>
   body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
     width: 95%;
     height: 95%;
     display: grid;
@@ -43,12 +66,9 @@
   }
   #output {
     grid-column: 2;
-    display: flex;
+    overflow: scroll;
   }
   #output > * {
-    justify-content: center;
-    align-content: center;
-    text-align: center;
     margin: 0 auto;
   }
 </style>
