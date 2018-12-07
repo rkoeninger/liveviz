@@ -1,5 +1,10 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 <script src="viz.js"></script>
 <script src="lz-string.min.js"></script>
+</head>
+<body>
 <div id="container">
   <textarea id="input">digraph {
   A1 -> {B1; B2}
@@ -9,8 +14,8 @@
 }</textarea>
   <div id="output"></div>
 </div>
-<button id="hide">Hide Editor</button>
-<button id="size">Fit to Window</button>
+<button id="size" class="fas fa-compress" title="Fit to Window"></button>
+<button id="hide" class="fas fa-chevron-circle-left" title="Hide Editor"></button>
 <script>{
   document.title = "LiveViz";
   const input = document.getElementById("input");
@@ -28,22 +33,30 @@
     style.parentNode.removeChild(style);
   };
   size.onclick = () => {
-    if (size.innerText === "Fit to Window") {
-      size.innerText = "Show Full Size";
+    if (size.classList.contains("fa-compress")) {
+      size.classList.remove("fa-compress");
+      size.classList.add("fa-expand");
+      size.setAttribute("title", "Show Full Size");
       const style = document.createElement("style");
       applyStyle("fit", "#output { display: flex; align-items: center; justify-content: center; }");
     } else {
-      size.innerText = "Fit to Window";
+      size.classList.remove("fa-expand");
+      size.classList.add("fa-compress");
+      size.setAttribute("title", "Fit to Window");
       unapplyStyle("fit");
     }
   };
   hide.onclick = () => {
-    if (hide.innerText === "Hide Editor") {
-      hide.innerText = "Show Editor";
+    if (hide.classList.contains("fa-chevron-circle-left")) {
+      hide.classList.remove("fa-chevron-circle-left");
+      hide.classList.add("fa-chevron-circle-right");
+      hide.setAttribute("title", "Show Editor");
       const style = document.createElement("style");
       applyStyle("noeditor", "#container { grid-template-columns: 0% 100%; } #input { display: none; }");
     } else {
-      hide.innerText = "Hide Editor";
+      hide.classList.remove("fa-chevron-circle-right");
+      hide.classList.add("fa-chevron-circle-left");
+      hide.setAttribute("title", "Hide Editor");
       unapplyStyle("noeditor");
     }
   };
@@ -90,14 +103,18 @@
   #output > * {
     margin: 0 auto;
   }
-  #hide {
+  button {
     position: absolute;
+    font-size: 2rem;
+  }
+  #hide {
     left: 4px;
     bottom: 4px;
   }
   #size {
-    position: absolute;
     right: 4px;
     top: 4px;
   }
 </style>
+</body>
+</html>
