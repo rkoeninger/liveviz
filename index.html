@@ -3,21 +3,19 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 <script src="viz.js"></script>
 <script src="lz-string.min.js"></script>
+<title>LiveViz Demo Graph</title>
 </head>
 <body>
 <div id="container">
-  <textarea id="input">digraph {
-  A1 -> {B1; B2}
-  B1 -> {C1; C2} -> D1
-  B2 -> {C2; C3} -> D2
-        {D1; D2} -> E1
+  <textarea id="input">digraph "LiveViz Demo Graph" {
+  A -> {B; C} -> D
+  C -> B
 }</textarea>
   <div id="output"></div>
 </div>
 <button id="size" class="fas fa-compress" title="Fit to Window"></button>
 <button id="hide" class="fas fa-chevron-circle-left" title="Hide Editor"></button>
 <script>{
-  document.title = "LiveViz";
   const input = document.getElementById("input");
   const output = document.getElementById("output");
   const size = document.getElementById("size");
@@ -72,7 +70,11 @@
       history.replaceState({state}, document.title, uri);
     }
   };
-  const render = () => output.innerHTML = Viz(input.value, "svg");
+  const render = () => {
+    output.innerHTML = Viz(input.value, "svg");
+    const title = document.querySelector("#output svg title");
+    document.title = title ? title.innerHTML : "LiveViz";
+  };
   input.onkeyup = () => {
     changed = true;
     setTimeout(remember, 5000);
