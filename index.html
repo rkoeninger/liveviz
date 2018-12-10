@@ -1,122 +1,122 @@
 <html>
-<head>
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-<script src="viz.js"></script>
-<script src="lz-string.min.js"></script>
-<title>LiveViz Demo Graph</title>
-</head>
-<body>
-<div id="container">
-  <textarea id="input">digraph "LiveViz Demo Graph" {
+  <head>
+    <link rel="stylesheet" href="fontawesome/all.css">
+    <script src="viz.js"></script>
+    <script src="lz-string.min.js"></script>
+    <title>LiveViz Demo Graph</title>
+  </head>
+  <body>
+    <div id="container">
+      <textarea id="input">digraph "LiveViz Demo Graph" {
   A -> {B; C} -> D
   C -> B
 }</textarea>
-  <div id="output"></div>
-</div>
-<button id="size" class="fas fa-compress" title="Fit to Window"></button>
-<button id="hide" class="fas fa-chevron-circle-left" title="Hide Editor"></button>
-<script>{
-  const input = document.getElementById("input");
-  const output = document.getElementById("output");
-  const size = document.getElementById("size");
-  const hide = document.getElementById("hide");
-  const applyStyle = (id, css) => {
-    const style = document.createElement("style");
-    style.setAttribute("id", id);
-    style.innerText = css;
-    document.body.appendChild(style);
-  };
-  const unapplyStyle = id => {
-    const style = document.getElementById(id);
-    style.parentNode.removeChild(style);
-  };
-  size.onclick = () => {
-    if (size.classList.contains("fa-compress")) {
-      size.classList.remove("fa-compress");
-      size.classList.add("fa-expand");
-      size.setAttribute("title", "Show Full Size");
-      const style = document.createElement("style");
-      applyStyle("fit", "#output { display: flex; align-items: center; justify-content: center; }");
-    } else {
-      size.classList.remove("fa-expand");
-      size.classList.add("fa-compress");
-      size.setAttribute("title", "Fit to Window");
-      unapplyStyle("fit");
-    }
-  };
-  hide.onclick = () => {
-    if (hide.classList.contains("fa-chevron-circle-left")) {
-      hide.classList.remove("fa-chevron-circle-left");
-      hide.classList.add("fa-chevron-circle-right");
-      hide.setAttribute("title", "Show Editor");
-      const style = document.createElement("style");
-      applyStyle("noeditor", "#container { grid-template-columns: 0% 100%; } #input { display: none; }");
-    } else {
-      hide.classList.remove("fa-chevron-circle-right");
-      hide.classList.add("fa-chevron-circle-left");
-      hide.setAttribute("title", "Hide Editor");
-      unapplyStyle("noeditor");
-    }
-  };
-  let changed = false;
-  if (window.location.search) {
-    input.value = LZString.decompressFromBase64(window.location.search.substr(1));
-  }
-  const remember = () => {
-    if (changed) {
-      changed = false;
-      const state = LZString.compressToBase64(input.value);
-      const uri = `${location.protocol}//${location.host}${location.pathname}?${state}`;
-      history.replaceState({state}, document.title, uri);
-    }
-  };
-  const render = () => {
-    output.innerHTML = Viz(input.value, "svg");
-    const title = document.querySelector("#output svg title");
-    document.title = title ? title.innerHTML : "LiveViz";
-  };
-  input.onkeyup = () => {
-    changed = true;
-    setTimeout(remember, 5000);
-    render();
-  };
-  render();
-}</script>
-<style>
-  body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  #container {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: 35% 65%;
-  }
-  #input {
-    grid-column: 1;
-  }
-  #output {
-    grid-column: 2;
-    overflow: auto;
-  }
-  #output > * {
-    margin: 0 auto;
-  }
-  button {
-    position: absolute;
-    font-size: 2rem;
-  }
-  #hide {
-    left: 4px;
-    bottom: 4px;
-  }
-  #size {
-    right: 4px;
-    top: 4px;
-  }
-</style>
-</body>
+      <div id="output"></div>
+    </div>
+    <button id="size" class="fas fa-compress" title="Fit to Window"></button>
+    <button id="hide" class="fas fa-chevron-circle-left" title="Hide Editor"></button>
+    <script>{
+      const input = document.getElementById("input");
+      const output = document.getElementById("output");
+      const size = document.getElementById("size");
+      const hide = document.getElementById("hide");
+      const applyStyle = (id, css) => {
+        const style = document.createElement("style");
+        style.setAttribute("id", id);
+        style.innerText = css;
+        document.body.appendChild(style);
+      };
+      const unapplyStyle = id => {
+        const style = document.getElementById(id);
+        style.parentNode.removeChild(style);
+      };
+      size.onclick = () => {
+        if (size.classList.contains("fa-compress")) {
+          size.classList.remove("fa-compress");
+          size.classList.add("fa-expand");
+          size.setAttribute("title", "Show Full Size");
+          const style = document.createElement("style");
+          applyStyle("fit", "#output { display: flex; align-items: center; justify-content: center; }");
+        } else {
+          size.classList.remove("fa-expand");
+          size.classList.add("fa-compress");
+          size.setAttribute("title", "Fit to Window");
+          unapplyStyle("fit");
+        }
+      };
+      hide.onclick = () => {
+        if (hide.classList.contains("fa-chevron-circle-left")) {
+          hide.classList.remove("fa-chevron-circle-left");
+          hide.classList.add("fa-chevron-circle-right");
+          hide.setAttribute("title", "Show Editor");
+          const style = document.createElement("style");
+          applyStyle("noeditor", "#container { grid-template-columns: 0% 100%; } #input { display: none; }");
+        } else {
+          hide.classList.remove("fa-chevron-circle-right");
+          hide.classList.add("fa-chevron-circle-left");
+          hide.setAttribute("title", "Hide Editor");
+          unapplyStyle("noeditor");
+        }
+      };
+      let changed = false;
+      if (window.location.search) {
+        input.value = LZString.decompressFromBase64(window.location.search.substr(1));
+      }
+      const remember = () => {
+        if (changed) {
+          changed = false;
+          const state = LZString.compressToBase64(input.value);
+          const uri = `${location.protocol}//${location.host}${location.pathname}?${state}`;
+          history.replaceState({state}, document.title, uri);
+        }
+      };
+      const render = () => {
+        output.innerHTML = Viz(input.value, "svg");
+        const title = document.querySelector("#output svg title");
+        document.title = title ? title.innerHTML : "LiveViz";
+      };
+      input.onkeyup = () => {
+        changed = true;
+        setTimeout(remember, 5000);
+        render();
+      };
+      render();
+    }</script>
+    <style>
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #container {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 35% 65%;
+      }
+      #input {
+        grid-column: 1;
+      }
+      #output {
+        grid-column: 2;
+        overflow: auto;
+      }
+      #output > * {
+        margin: 0 auto;
+      }
+      button {
+        position: absolute;
+        font-size: 2rem;
+      }
+      #hide {
+        left: 4px;
+        bottom: 4px;
+      }
+      #size {
+        right: 4px;
+        top: 4px;
+      }
+    </style>
+  </body>
 </html>
