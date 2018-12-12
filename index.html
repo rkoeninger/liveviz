@@ -20,44 +20,52 @@
       const output = document.getElementById("output");
       const size = document.getElementById("size");
       const hide = document.getElementById("hide");
-      const applyStyle = (id, css) => {
-        const style = document.createElement("style");
-        style.setAttribute("id", id);
-        style.innerText = css;
-        document.body.appendChild(style);
-      };
-      const unapplyStyle = id => {
-        const style = document.getElementById(id);
-        style.parentNode.removeChild(style);
-      };
-      size.onclick = () => {
-        if (size.classList.contains("fa-compress")) {
-          size.classList.remove("fa-compress");
-          size.classList.add("fa-expand");
-          size.setAttribute("title", "Show Full Size");
+      const toggleOnClick = (class1, class2, title1, title2, styleId, styleCss) => ({ target }) => {
+        if (target.classList.contains(class1)) {
+          target.classList.remove(class1);
+          target.classList.add(class2);
+          target.setAttribute("title", title2);
           const style = document.createElement("style");
-          applyStyle("fit", "#output { display: flex; align-items: center; justify-content: center; }");
+          style.setAttribute("id", styleId);
+          style.innerText = styleCss;
+          document.body.appendChild(style);
         } else {
-          size.classList.remove("fa-expand");
-          size.classList.add("fa-compress");
-          size.setAttribute("title", "Fit to Window");
-          unapplyStyle("fit");
+          target.classList.remove(class2);
+          target.classList.add(class1);
+          target.setAttribute("title", title1);
+          const style = document.getElementById(styleId);
+          if (style) {
+            style.parentNode.removeChild(style);
+          }
         }
       };
-      hide.onclick = () => {
-        if (hide.classList.contains("fa-chevron-circle-left")) {
-          hide.classList.remove("fa-chevron-circle-left");
-          hide.classList.add("fa-chevron-circle-right");
-          hide.setAttribute("title", "Show Editor");
-          const style = document.createElement("style");
-          applyStyle("noeditor", "#container { grid-template-columns: 0% 100%; } #input { display: none; }");
-        } else {
-          hide.classList.remove("fa-chevron-circle-right");
-          hide.classList.add("fa-chevron-circle-left");
-          hide.setAttribute("title", "Hide Editor");
-          unapplyStyle("noeditor");
+      size.onclick = toggleOnClick(
+        "fa-compress",
+        "fa-expand",
+        "Fit to Window",
+        "Show Full Size",
+        "fit",
+        `
+        #output {
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-      };
+        `);
+      hide.onclick = toggleOnClick(
+        "fa-chevron-circle-left",
+        "fa-chevron-circle-right",
+        "Hide Editor",
+        "Show Editor",
+        "noeditor",
+        `
+        #container {
+          grid-template-columns: 0% 100%;
+        }
+        #input {
+          display: none;
+        }
+        `);
       let changed = false;
       if (window.location.search) {
         input.value = LZString.decompressFromBase64(window.location.search.substr(1));
