@@ -7,17 +7,19 @@
   </head>
   <body>
     <div id="container">
-      <textarea id="input">digraph "LiveViz Demo Graph" {
+      <textarea id="input" autocorrect="off" autocapitalize="off" spellcheck="false">digraph "LiveViz Demo Graph" {
   A -> {B; C} -> D
   C -> B
 }</textarea>
       <div id="output"></div>
     </div>
+    <div id="error"></div>
     <button id="size" class="fas fa-compress" title="Fit to Window"></button>
     <button id="hide" class="fas fa-chevron-circle-left" title="Hide Editor"></button>
     <script>{
       const input = document.getElementById("input");
       const output = document.getElementById("output");
+      const error = document.getElementById("error");
       const size = document.getElementById("size");
       const hide = document.getElementById("hide");
       const toggleOnClick = (class1, class2, title1, title2, styleId, styleCss) => ({ target }) => {
@@ -79,7 +81,24 @@
         }
       };
       const render = () => {
-        output.innerHTML = Viz(input.value, "svg");
+        let result = Viz(input.value, "svg");
+        if (result.startsWith("Error:")) {
+          const unknownStartIndex = result.indexOf("<unknown>") + "<unknown>".length;
+          let unknownEndIndex = result.indexOf("</unknown>");
+          if (unknownEndIndex < 0) {
+            unknownEndIndex = result.length;
+          }
+          const unknownInner = result.substring(unknownStartIndex, unknownEndIndex - unknownStartIndex);
+          const xmlIndex = unknownInner.indexOf("<?xml");
+          const errorMessage = unknownInner.substring(0, xmlIndex);
+          result = unknownInner.substring(xmlIndex);
+          error.innerText = errorMessage;
+          error.setAttribute("show", "");
+        } else {
+          error.innerText = "";
+          error.removeAttribute("show");
+        }
+        output.innerHTML = result;
         const title = document.querySelector("#output svg title");
         document.title = title ? title.innerHTML : "LiveViz";
       };
@@ -112,6 +131,17 @@
       }
       #output > * {
         margin: 0 auto;
+      }
+      #error {
+        display: none;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        text-align: center;
+        background-color: rgba(255, 0, 0, 0.25);
+      }
+      #error[show] {
+        display: unset;
       }
       button {
         position: absolute;
