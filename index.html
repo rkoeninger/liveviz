@@ -13,13 +13,13 @@
 }</textarea>
       <div id="output"></div>
     </div>
-    <div id="error"></div>
+    <div id="status"></div>
     <button id="size" class="fas fa-compress" title="Fit to Window"></button>
     <button id="hide" class="fas fa-chevron-circle-left" title="Hide Editor"></button>
     <script>{
       const input = document.getElementById("input");
       const output = document.getElementById("output");
-      const error = document.getElementById("error");
+      const status = document.getElementById("status");
       const size = document.getElementById("size");
       const hide = document.getElementById("hide");
       const toggleOnClick = (class1, class2, title1, title2, styleId, styleCss) => ({ target }) => {
@@ -80,25 +80,35 @@
           history.replaceState({state}, document.title, uri);
         }
       };
+      const extract = result => {
+        const unknownStartIndex = result.indexOf("<unknown>") + "<unknown>".length;
+        let unknownEndIndex = result.indexOf("</unknown>");
+        if (unknownEndIndex < 0) {
+          unknownEndIndex = result.length;
+        }
+        const unknownInner = result.substring(unknownStartIndex, unknownEndIndex - unknownStartIndex);
+        const xmlIndex = unknownInner.indexOf("<?xml");
+        const errorMessage = unknownInner.substring(0, xmlIndex);
+        result = unknownInner.substring(xmlIndex);
+        return [result, errorMessage];
+      };
       const render = () => {
+        status.removeAttribute("show");
+        status.removeAttribute("error");
+        status.removeAttribute("warning");
         let result = Viz(input.value, "svg");
+        let errorMessage = "";
         if (result.startsWith("Error:")) {
-          const unknownStartIndex = result.indexOf("<unknown>") + "<unknown>".length;
-          let unknownEndIndex = result.indexOf("</unknown>");
-          if (unknownEndIndex < 0) {
-            unknownEndIndex = result.length;
-          }
-          const unknownInner = result.substring(unknownStartIndex, unknownEndIndex - unknownStartIndex);
-          const xmlIndex = unknownInner.indexOf("<?xml");
-          const errorMessage = unknownInner.substring(0, xmlIndex);
-          result = unknownInner.substring(xmlIndex);
-          error.innerText = errorMessage;
-          error.setAttribute("show", "");
-        } else {
-          error.innerText = "";
-          error.removeAttribute("show");
+          status.setAttribute("show", "");
+          status.setAttribute("error", "");
+          [result, errorMessage] = extract(result);
+        } else if (result.startsWith("Warning:")) {
+          status.setAttribute("show", "");
+          status.setAttribute("warning", "");
+          [result, errorMessage] = extract(result);
         }
         output.innerHTML = result;
+        status.innerText = errorMessage;
         const title = document.querySelector("#output svg title");
         document.title = title ? title.innerHTML : "LiveViz";
       };
@@ -132,16 +142,21 @@
       #output > * {
         margin: 0 auto;
       }
-      #error {
+      #status {
         display: none;
         position: absolute;
         width: 100%;
         bottom: 0;
         text-align: center;
-        background-color: rgba(255, 0, 0, 0.25);
       }
-      #error[show] {
+      #status[show] {
         display: unset;
+      }
+      #status[error] {
+        background-color: rgba(255, 0, 0, 0.5);
+      }
+      #status[warning] {
+        background-color: rgba(255, 255, 0, 0.5);
       }
       button {
         position: absolute;
